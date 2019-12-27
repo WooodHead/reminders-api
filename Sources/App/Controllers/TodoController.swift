@@ -1,5 +1,5 @@
 import Vapor
-import Crypto
+import AppModels
 
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController {

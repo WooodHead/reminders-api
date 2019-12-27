@@ -1,4 +1,5 @@
 import Vapor
+import AppModels
 
 /// Register your application's routes here.
 public func routes(_ router: Router) throws {
@@ -17,10 +18,9 @@ public func routes(_ router: Router) throws {
         return "Hello \(name)"
     }
     
-    router.post(InfoData.self, at: "info") { (req, data) -> InfoResponse in
+    router.post(InfoData.self, at: "info") { (request, data) -> InfoResponse in
         return InfoResponse(request: data)
     }
-    
 
     // Example of configuring a controller
     let todoController = TodoController()
