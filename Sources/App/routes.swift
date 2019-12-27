@@ -21,5 +21,7 @@ public func routes(_ router: Router) throws {
     router.post(InfoData.self, at: "info") { (request, data) -> InfoResponse in
         return InfoResponse(request: data)
     }
+    
+    try TodoController().boot(router: router)
 }
 
