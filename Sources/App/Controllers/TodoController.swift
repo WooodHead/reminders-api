@@ -1,9 +1,11 @@
 import Vapor
+import Crypto
 
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController {
     /// Returns a list of all `Todo`s.
     func index(_ req: Request) throws -> Future<[Todo]> {
+        // use the request objc to create services
         return Todo.query(on: req).all()
     }
 
