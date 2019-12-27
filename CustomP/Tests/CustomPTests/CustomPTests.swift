@@ -1,12 +1,12 @@
 import XCTest
-@testable import AppModels
+@testable import CustomP
 
-final class AppModelsTests: XCTestCase {
+final class CustomPTests: XCTestCase {
     func testExample() {
         // This is an example of a functional test case.
         // Use XCTAssert and related functions to verify your tests produce the correct
         // results.
-        XCTAssertEqual(AppModels().text, "Hello, World!")
+        XCTAssertEqual(CustomP().text, "Hello, World!")
     }
 
     static var allTests = [

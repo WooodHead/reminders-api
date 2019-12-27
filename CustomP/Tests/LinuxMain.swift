@@ -1,7 +1,7 @@
 import XCTest
 
-import AppModelsTests
+import CustomPTests
 
 var tests = [XCTestCaseEntry]()
-tests += AppModelsTests.allTests()
+tests += CustomPTests.allTests()
 XCTMain(tests)

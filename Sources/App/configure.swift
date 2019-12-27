@@ -1,16 +1,6 @@
 import FluentSQLite
 import Vapor
 
-class CustomRouter: Router {
-    var routes: [Route<Responder>] = []
-    func register(route: Route<Responder>) {
-        
-    }
-    
-    func route(request: Request) -> Responder? {
-        
-    }
-}
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
     // TODO: register services you might need
