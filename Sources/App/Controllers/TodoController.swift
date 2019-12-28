@@ -19,13 +19,19 @@ final class TodoController {
     /// Saves a decoded `Todo` to the database.
     func create(_ req: Request) throws -> Future<Todo> {
         return try req.content.decode(Todo.self).flatMap { todo in
-            return todo.save(on: req)
+            return todo.save(on: req).catchFlatMap { (error) -> Future<Todo> in
+                return Todo(title: "lorem ipsun").save(on: req)
+            }
         }
     }
     
-    func batchCreate(_ req: Request) throws -> Future<HTTPStatus> {
-        return try flatMap(to: HTTPStatus.self, req.content.decode([Todo].self), index(req)) { (newReminders, reminders) -> Future<HTTPStatus> in
-            return req.future(.created)
+    func batchCreate(_ reminders: [Todo], _ req: Request) throws -> Future<[Todo]> {
+        var todoSaveResults: [Future<Todo>] = []
+        for item in reminders {
+            todoSaveResults.append(item.save(on: req))
+        }
+        return todoSaveResults.flatten(on: req).flatMap { (todo)  in
+            return try self.index(req)
         }
     }
     

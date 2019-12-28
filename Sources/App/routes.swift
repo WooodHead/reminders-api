@@ -23,8 +23,7 @@ public func routes(_ router: Router) throws {
     }
     
     let controller = TodoController()
-    router.post("api", "reminders", use: controller.batchCreate)
-    
+//    router.post("api", "reminders", use: controller.batchCreate)
     // groupped
     try controller.boot(router: router)
     
