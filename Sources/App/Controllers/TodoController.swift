@@ -5,17 +5,24 @@ import Fluent
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController {
     func boot(router: Router) throws {
-        let todoGroup = router.grouped("api", "reminder")
-        todoGroup.get(use: index)
+        let todoGroup = router.grouped("api", "todo")
+        
+        // You only get to use a specific HTTPMethod once
+        //todoGroup.get(use: todoSearchByTitle)
+        todoGroup.get(use: todoByTitleOrID)
         todoGroup.post(use: create)
         todoGroup.delete(use: delete)
+
+//        router.get("api", "todo", use: todoByID)
+//        router.get("api", "todo", use: todoSearchByTitle)
+        // you dont need to specifiy the Parameters in the .get(path: "", Todo.parameter)
+        // many query params???
     }
     
     func todoByID(_ req: Request) throws -> Future<Todo> {
         guard let searchById = req.query[Int.self, at: "id"] else {
             throw Abort(.badRequest)
         }
-        
         return Todo.find(searchById, on: req).unwrap(or: Abort(.ok))
     }
     
@@ -23,8 +30,19 @@ final class TodoController {
         guard let searchByTitle = req.query[String.self, at: "term"] else {
             throw Abort(.badRequest)
         }
-        
         return Todo.query(on: req).filter(\.title == searchByTitle).all()
+    }
+    
+    func todoByTitleOrID(_ req: Request) throws -> Future<[Todo]> {
+        // strings can be empty
+        guard let searchByTitle = req.query[String.self, at: "term"], let id = req.query[Int.self, at: "id"] else {
+            throw Abort(.badRequest)
+        }
+        
+        return Todo.query(on: req).group(.or) { or in
+            or.filter(\.id == id)
+            or.filter(\.title == searchByTitle)
+        }.all()
     }
     
     func todoPUT(_ req: Request) throws -> Future<Todo> {

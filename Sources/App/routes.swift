@@ -24,9 +24,7 @@ public func routes(_ router: Router) throws {
     
     let controller = TodoController()
 //    router.post("api", "reminders", use: controller.batchCreate)
-    router.get("api", "todo", Todo.parameter, use: controller.todoSearchByTitle)
-//    router.get("api", "todo", Todo.parameter, use: controller.todoByID)
-    
+
     // groupped
     try controller.boot(router: router)
 //    You should use the Request or Response containers to create services for responding to requests (in route closures and controllers)
