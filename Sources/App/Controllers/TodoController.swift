@@ -1,5 +1,6 @@
 import Vapor
 import AppModels
+import Fluent
 
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController {
@@ -8,6 +9,29 @@ final class TodoController {
         todoGroup.get(use: index)
         todoGroup.post(use: create)
         todoGroup.delete(use: delete)
+    }
+    
+    func todoByID(_ req: Request) throws -> Future<Todo> {
+        guard let searchById = req.query[Int.self, at: "id"] else {
+            throw Abort(.badRequest)
+        }
+        
+        return Todo.find(searchById, on: req).unwrap(or: Abort(.ok))
+    }
+    
+    func todoSearchByTitle(_ req: Request) throws -> Future<[Todo]> {
+        guard let searchByTitle = req.query[String.self, at: "term"] else {
+            throw Abort(.badRequest)
+        }
+        
+        return Todo.query(on: req).filter(\.title == searchByTitle).all()
+    }
+    
+    func todoPUT(_ req: Request) throws -> Future<Todo> {
+        return try flatMap(to: Todo.self, req.parameters.next(Todo.self), req.content.decode(Todo.self)) { (todo, updatedTodo) in
+            todo.title = updatedTodo.title
+            return todo.save(on: req)
+        }
     }
     
     /// Returns a list of all `Todo`s.
@@ -24,17 +48,6 @@ final class TodoController {
             }
         }
     }
-    
-    func batchCreate(_ reminders: [Todo], _ req: Request) throws -> Future<[Todo]> {
-        var todoSaveResults: [Future<Todo>] = []
-        for item in reminders {
-            todoSaveResults.append(item.save(on: req))
-        }
-        return todoSaveResults.flatten(on: req).flatMap { (todo)  in
-            return try self.index(req)
-        }
-    }
-    
 
     /// Deletes a parameterized `Todo`.
     func delete(_ req: Request) throws -> Future<HTTPStatus> {

@@ -21,8 +21,18 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     services.register(middlewares)
 
     // Configure a SQLite database
-    let sqlite = try SQLiteDatabase(storage: .memory)
-
+    var sqlite: SQLiteDatabase
+       
+       if env.isRelease {
+           /// Create file-based SQLite db using $SQLITE_PATH from process env
+           /// Use the static method Environment.get(_:) to fetch string values from the process environment.
+           sqlite = try SQLiteDatabase(storage: .file(path: Environment.get("SQLITE_PATH")!)) //db.sqlite url??
+       } else {
+           /// Create an in-memory SQLite database
+           sqlite = try SQLiteDatabase(storage: .memory)
+       }
+       services.register(sqlite)
+    
     // Register the configured SQLite database to the database config.
     var databases = DatabasesConfig()
     databases.add(database: sqlite, as: .sqlite)
