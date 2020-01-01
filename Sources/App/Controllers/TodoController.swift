@@ -3,34 +3,33 @@ import AppModels
 import Fluent
 
 /// Controls basic CRUD operations on `Todo`s.
-final class TodoController {
+final class TodoController: RouteCollection {
     func boot(router: Router) throws {
-        let todoGroup = router.grouped("api", "todo")
-        
+        let todoRoutes = router.grouped("api", "todo")
         // You only get to use a specific HTTPMethod once
         //todoGroup.get(use: todoSearchByTitle)
-        todoGroup.get(use: todoByTitleOrID)
-        todoGroup.post(use: create)
-        todoGroup.delete(use: delete)
-
+        todoRoutes.get(use: todoByIdQueryParams) //  1. URLQueryParams ≈ req.query[Type.self, at: :key]
+//        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type ≈ Todo.parametes
+        todoRoutes.post(Todo.self, use: create) //3. jsonBody ≈ Todo.self
+        todoRoutes.delete(use: delete)
+        
 //        router.get("api", "todo", use: todoByID)
 //        router.get("api", "todo", use: todoSearchByTitle)
         // you dont need to specifiy the Parameters in the .get(path: "", Todo.parameter)
         // many query params???
     }
     
-    func todoByID(_ req: Request) throws -> Future<Todo> {
+    func todoByIdQueryParams(_ req: Request) throws -> Future<Todo> {
         guard let searchById = req.query[Int.self, at: "id"] else {
             throw Abort(.badRequest)
         }
         return Todo.find(searchById, on: req).unwrap(or: Abort(.ok))
     }
     
-    func todoSearchByTitle(_ req: Request) throws -> Future<[Todo]> {
-        guard let searchByTitle = req.query[String.self, at: "term"] else {
-            throw Abort(.badRequest)
-        }
-        return Todo.query(on: req).filter(\.title == searchByTitle).all()
+    /// Search the database for a Todo object
+    /// - Parameter id: Int pass in the path
+    func todoByIdPath(_ req: Request) throws -> Future<Todo> {
+        return try req.parameters.next(Todo.self)
     }
     
     func todoByTitleOrID(_ req: Request) throws -> Future<[Todo]> {
@@ -59,12 +58,8 @@ final class TodoController {
     }
 
     /// Saves a decoded `Todo` to the database.
-    func create(_ req: Request) throws -> Future<Todo> {
-        return try req.content.decode(Todo.self).flatMap { todo in
-            return todo.save(on: req).catchFlatMap { (error) -> Future<Todo> in
-                return Todo(title: "lorem ipsun").save(on: req)
-            }
-        }
+    func create(_ req: Request, todo: Todo) throws -> Future<Todo> {
+        return todo.save(on: req)
     }
 
     /// Deletes a parameterized `Todo`.
