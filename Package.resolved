@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/idelfonsog2/app-models.git",
         "state": {
           "branch": "master",
-          "revision": "5ac9d1ab640c3bf92316bbf6a695b7f068e7ff49",
+          "revision": "54fc1e964f5927a9b05e687b399a0aa07cb0e957",
           "version": null
         }
       },
@@ -56,6 +56,15 @@
         }
       },
       {
+        "package": "FluentPostgreSQL",
+        "repositoryURL": "https://github.com/vapor/fluent-postgresql.git",
+        "state": {
+          "branch": null,
+          "revision": "8e3eb9d24d54ac58c8d04c194ad6b24f0b1b667e",
+          "version": "1.0.0"
+        }
+      },
+      {
         "package": "FluentSQLite",
         "repositoryURL": "https://github.com/vapor/fluent-sqlite.git",
         "state": {
@@ -80,6 +89,15 @@
           "branch": null,
           "revision": "f063180d0b84832accd33194e06ed3c41f8609ac",
           "version": "3.1.1"
+        }
+      },
+      {
+        "package": "PostgreSQL",
+        "repositoryURL": "https://github.com/vapor/postgresql.git",
+        "state": {
+          "branch": null,
+          "revision": "69ccf32e9164b207f9a773edac5433fe68ae3e5b",
+          "version": "1.5.0"
         }
       },
       {
