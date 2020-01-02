@@ -24,6 +24,9 @@ public func routes(_ router: Router) throws {
     
     let todoController = TodoController()
     try router.register(collection: todoController)
+    
+    let userController = UserController()
+    try router.register(collection: userController)
 //    You should use the Request or Response containers to create services for responding to requests (in route closures and controllers)
 }
 

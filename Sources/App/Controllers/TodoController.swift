@@ -9,7 +9,7 @@ final class TodoController: RouteCollection {
         // You only get to use a specific HTTPMethod once
         //todoGroup.get(use: todoSearchByTitle)
         todoRoutes.get(use: todoByIdQueryParams) //  1. URLQueryParams ≈ req.query[Type.self, at: :key]
-//        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type ≈ Todo.parametes
+        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type ≈ Todo.parametes
         todoRoutes.post(Todo.self, use: create) //3. jsonBody ≈ Todo.self
         todoRoutes.delete(use: delete)
         
