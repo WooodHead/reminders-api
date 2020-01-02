@@ -9,8 +9,9 @@ final class TodoController: RouteCollection {
         // You only get to use a specific HTTPMethod once
         //todoGroup.get(use: todoSearchByTitle)
         todoRoutes.get(use: todoByIdQueryParams) //  1. URLQueryParams ≈ req.query[Type.self, at: :key]
-        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type ≈ Todo.parametes
+        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type_id ≈ Todo.parametes
         todoRoutes.post(Todo.self, use: create) //3. jsonBody ≈ Todo.self
+        todoRoutes.put(Todo.parameter, use: updateTodo)
         todoRoutes.delete(use: delete)
         
 //        router.get("api", "todo", use: todoByID)
@@ -44,10 +45,14 @@ final class TodoController: RouteCollection {
         }.all()
     }
     
-    func todoPUT(_ req: Request) throws -> Future<Todo> {
-        return try flatMap(to: Todo.self, req.parameters.next(Todo.self), req.content.decode(Todo.self)) { (todo, updatedTodo) in
-            todo.title = updatedTodo.title
-            return todo.save(on: req)
+    func updateTodo(_ req: Request) throws -> Future<Todo> {
+        return try flatMap(to: Todo.self,
+                           req.parameters.next(Todo.self), //find the Todo in the DB??
+                           req.content.decode(Todo.self)) { (todo, updatedTodo) in // JSONDecoder
+                            
+                            todo.title = updatedTodo.title
+                            todo.userID = updatedTodo.userID
+                            return todo.save(on: req)
         }
     }
     

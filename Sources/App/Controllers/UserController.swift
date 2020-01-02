@@ -18,7 +18,11 @@ final class UserController: RouteCollection {
         userRoutes.post(User.self, use: createHandler)
     }
     
-    func createHandler(_ req: Request, user: User) throws -> Future<User> {
+    /// Saves user to the database
+    /// - Parameters:
+    ///   - req: Request.self
+    ///   - user: root level User.Type JSON
+    public func createHandler(_ req: Request, user: User) throws -> Future<User> {
         return user.save(on: req)
     }
     
