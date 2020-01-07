@@ -5,8 +5,6 @@ import AppModels
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
-    // TODO: register services you might need
-    
     // Register providers first
     try services.register(FluentSQLiteProvider())
     try services.register(FluentPostgreSQLProvider())
