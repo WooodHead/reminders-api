@@ -11,6 +11,11 @@ import Fluent
 import AppModels
 
 final class UserController: RouteCollection {
+    private let userRepository: UserRepository
+    init(userRepository: UserRepository) {
+        self.userRepository = userRepository
+    }
+    
     func boot(router: Router) throws {
         let userRoutes = router.grouped("api","users")
         userRoutes.get(use: getAllHandler)
@@ -23,11 +28,11 @@ final class UserController: RouteCollection {
     ///   - req: Request.self
     ///   - user: root level User.Type JSON
     public func createHandler(_ req: Request, user: User) throws -> Future<User> {
-        return try req.make(UserRepository.self).save(user: user)
+        return userRepository.save(user: user)
     }
     
     func getAllHandler(_ req: Request) throws -> Future<[User]> {
-        return try req.make(UserRepository.self).all()
+        return userRepository.all()
     }
     
     func getHandler(_ req: Request) throws -> Future<User> {

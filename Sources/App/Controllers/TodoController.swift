@@ -4,12 +4,18 @@ import Fluent
 
 /// Controls basic CRUD operations on `Todo`s.
 final class TodoController: RouteCollection {
+    // thread-safe architecture
+    private let todoRespositroy: TodoRespositroy
+    init(todoRespositroy: TodoRespositroy) {
+        self.todoRespositroy = todoRespositroy
+    }
+    
     func boot(router: Router) throws {
         let todoRoutes = router.grouped("api", "todo")
         todoRoutes.get(use: todoByTitleOrID)
         todoRoutes.get(use: todoByIdQueryParams) //  1. URLQueryParams ≈ req.query[Type.self, at: :key]
-        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type_id ≈ Todo.parametes
-        todoRoutes.post(Todo.self, use: create) //3. jsonBody ≈ Todo.self
+//        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type_id ≈ Todo.parametes
+        todoRoutes.post(Todo.self, use: create) //3. decodes the Todo object for the handler
         todoRoutes.put(Todo.parameter, use: updateTodo)
         todoRoutes.delete(use: delete)
         // you dont need to specifiy the Parameters in the .get(path: "", Todo.parameter)
@@ -19,15 +25,16 @@ final class TodoController: RouteCollection {
         guard let searchById = req.query[Int.self, at: "id"] else {
             throw Abort(.badRequest)
         }
-        return try req.make(TodoRespositroy.self).find(id: searchById).unwrap(or: Abort(.ok))
+        
+        return todoRespositroy.find(id: searchById).unwrap(or: Abort(.ok))
     }
     
+    //todoRoutes.get(Todo.parameter, use: todoByIdPath)
     /// Search the database for a Todo object
     /// - Parameter id: Int pass in the path
-    func todoByIdPath(_ req: Request) throws -> Future<Todo> {
-        return try req.parameters.next(Todo.self)
-        // FIXME: 
-//        return try req.make(TodoRespositroy.self).find(id: id)
+    func todoByIdPath(_ req: Request) throws -> Future<Todo?> {
+        let id = try req.parameters.next(Int.self)
+        return todoRespositroy.find(id: id)
     }
     
     func todoByTitleOrID(_ req: Request) throws -> Future<[Todo]> {
@@ -55,12 +62,12 @@ final class TodoController: RouteCollection {
     
     /// Returns a list of all `Todo`s.
     func index(_ req: Request) throws -> Future<[Todo]> {
-        return try req.make(TodoRespositroy.self).all()
+        return todoRespositroy.all()
     }
 
     /// Saves a decoded `Todo` to the database.
-    func create(_ req: Request, todo: Todo) throws -> Future<Todo> {
-        return try req.make(TodoRespositroy.self).save(todo: todo)
+    func create(_ req: Request, content: Todo) throws -> Future<Todo> {
+        return todoRespositroy.save(todo: content)
     }
 
     /// Deletes a parameterized `Todo`.

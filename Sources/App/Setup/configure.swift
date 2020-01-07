@@ -1,7 +1,6 @@
 import FluentSQLite
 import FluentPostgreSQL
 import Vapor
-import AppModels
 
 /// Called before your application initializes.
 public func configure(_ config: inout Config, _ env: inout Environment, _ services: inout Services) throws {
@@ -10,7 +9,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     try services.register(FluentPostgreSQLProvider())
     
     // Registers Data Sources
-	
+    setupRepositories(services: &services, config: &config)
+    
     // Register routes to the router
     let router = EngineRouter.default()
     try routes(router)
@@ -30,7 +30,6 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     
     // Configure migrations
     var migrations = MigrationConfig()
-    migrations.add(model: Todo.self, database: .psql)
-    migrations.add(model: User.self, database: .psql)
+    configureMigrations(config: &migrations)
     services.register(migrations)
 }
