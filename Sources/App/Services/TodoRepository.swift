@@ -15,10 +15,13 @@ protocol TodoRespositroy: ServiceType {
     func all() -> Future<[Todo]>
     func find(title: String) -> Future<Todo?>
     func findCount() -> Future<Int>
-    func save(todo: Todo) -> Future<Todo>
+    func save(_ content: Todo) -> Future<Todo>
+    func findByParams(query: QueryContainer) throws -> Future<[Todo]>
+    func delete(_ content: Todo) -> EventLoopFuture<HTTPStatus>
 }
 
 final class PostgreSQLTodoRepository: TodoRespositroy {
+    
     let db: PostgreSQLDatabase.ConnectionPool
     static let serviceSupports: [Any.Type] = [UserRepository.self]
      
@@ -50,9 +53,28 @@ final class PostgreSQLTodoRepository: TodoRespositroy {
         }
     }
     
-    func save(todo: Todo) -> EventLoopFuture<Todo> {
+    func findByParams(query: QueryContainer) throws -> Future<[Todo]> {
+        guard let searchByTitle = query[String.self, at: "term"], let id = query[Int.self, at: "id"] else {
+            throw Abort(.badRequest)
+        }
+        
         return db.withConnection { (conn) in
-            return todo.save(on: conn)
+            return Todo.query(on: conn).group(.or) { or in
+                or.filter(\.id == id)
+                or.filter(\.title == searchByTitle)
+            }.all()
+        }
+    }
+    
+    func save(_ content: Todo) -> Future<Todo> {
+        return db.withConnection { (conn) in
+            return content.save(on: conn)
+        }
+    }
+    
+    func delete(_ content: Todo) -> EventLoopFuture<HTTPStatus> {
+        return db.withConnection { (conn) in
+            return content.delete(on: conn).transform(to: .ok)
         }
     }
     
