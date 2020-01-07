@@ -21,31 +21,13 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     middlewares.use(FileMiddleware.self) // Serves files from `Public/` directory
     middlewares.use(ErrorMiddleware.self) // Catches errors and converts to HTTP response
     services.register(middlewares)
-
-    // Configure a SQLite database
-    var postgres: PostgreSQLDatabase
        
-//       if env.isRelease {
-           /// Create file-based SQLite db using $SQLITE_PATH from process env
-           /// Use the static method Environment.get(_:) to fetch string values from the process environment.
-//           sqlite = try SQLiteDatabase(storage: .file(path: Environment.get("SQLITE_PATH")!)) //db.sqlite url??
-        let database = Environment.get("POSTGRES_DB")
-        let user = Environment.get("POSTGRES_USER")
-        let password = Environment.get("POSTGRES_PASSWORD")
-        let config = PostgreSQLDatabaseConfig(hostname: "localhost", username: "vapor", database: "vapor", password: "password")
-        postgres = PostgreSQLDatabase(config: config)
-//       } else {
-//           /// Create an in-memory SQLite database
-//        postgres = try PostgreSQLDatabase(config: .default())
-//       }
-    
-       services.register(postgres)
-    
-    // Register the configured SQLite database to the database config.
-    var databases = DatabasesConfig()
-    databases.add(database: postgres, as: .psql)
-    services.register(databases)
+    // Register the configured psql database to the database config.
+    var databasesConfig = DatabasesConfig()
+    try configurePSQLDatabase(config: &databasesConfig)
+    try configureSQLiteDatabase(config: &databasesConfig)
 
+    services.register(databasesConfig)
     // Configure migrations
     var migrations = MigrationConfig()
     migrations.add(model: Todo.self, database: .psql)

@@ -23,14 +23,14 @@ final class UserController: RouteCollection {
     ///   - req: Request.self
     ///   - user: root level User.Type JSON
     public func createHandler(_ req: Request, user: User) throws -> Future<User> {
-        return user.save(on: req)
+        return try req.make(UserRepository.self).save(user: user)
     }
     
     func getAllHandler(_ req: Request) throws -> Future<[User]> {
-        return User.query(on: req).all()
+        return try req.make(UserRepository.self).all()
     }
     
     func getHandler(_ req: Request) throws -> Future<User> {
-        return try req.parameters.next(User.self) // I dont thin this queries the db
+        return try req.parameters.next(User.self)
     }
 }
