@@ -6,31 +6,28 @@ import Fluent
 final class TodoController: RouteCollection {
     func boot(router: Router) throws {
         let todoRoutes = router.grouped("api", "todo")
-        // You only get to use a specific HTTPMethod once
-        //todoGroup.get(use: todoSearchByTitle)
+        todoRoutes.get(use: todoByTitleOrID)
         todoRoutes.get(use: todoByIdQueryParams) //  1. URLQueryParams ≈ req.query[Type.self, at: :key]
         todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type_id ≈ Todo.parametes
         todoRoutes.post(Todo.self, use: create) //3. jsonBody ≈ Todo.self
         todoRoutes.put(Todo.parameter, use: updateTodo)
         todoRoutes.delete(use: delete)
-        
-//        router.get("api", "todo", use: todoByID)
-//        router.get("api", "todo", use: todoSearchByTitle)
         // you dont need to specifiy the Parameters in the .get(path: "", Todo.parameter)
-        // many query params???
     }
     
     func todoByIdQueryParams(_ req: Request) throws -> Future<Todo> {
         guard let searchById = req.query[Int.self, at: "id"] else {
             throw Abort(.badRequest)
         }
-        return Todo.find(searchById, on: req).unwrap(or: Abort(.ok))
+        return try req.make(TodoRespositroy.self).find(id: searchById).unwrap(or: Abort(.ok))
     }
     
     /// Search the database for a Todo object
     /// - Parameter id: Int pass in the path
     func todoByIdPath(_ req: Request) throws -> Future<Todo> {
         return try req.parameters.next(Todo.self)
+        // FIXME: 
+//        return try req.make(TodoRespositroy.self).find(id: id)
     }
     
     func todoByTitleOrID(_ req: Request) throws -> Future<[Todo]> {
@@ -58,13 +55,12 @@ final class TodoController: RouteCollection {
     
     /// Returns a list of all `Todo`s.
     func index(_ req: Request) throws -> Future<[Todo]> {
-        // use the request objc to create services
-        return Todo.query(on: req).all()
+        return try req.make(TodoRespositroy.self).all()
     }
 
     /// Saves a decoded `Todo` to the database.
     func create(_ req: Request, todo: Todo) throws -> Future<Todo> {
-        return todo.save(on: req)
+        return try req.make(TodoRespositroy.self).save(todo: todo)
     }
 
     /// Deletes a parameterized `Todo`.
