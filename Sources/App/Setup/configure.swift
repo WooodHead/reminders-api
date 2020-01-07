@@ -10,7 +10,9 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // Register providers first
     try services.register(FluentSQLiteProvider())
     try services.register(FluentPostgreSQLProvider())
-
+    
+    // Registers Data Sources
+	
     // Register routes to the router
     let router = EngineRouter.default()
     try routes(router)
@@ -26,8 +28,8 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     var databasesConfig = DatabasesConfig()
     try configurePSQLDatabase(config: &databasesConfig)
     try configureSQLiteDatabase(config: &databasesConfig)
-
     services.register(databasesConfig)
+    
     // Configure migrations
     var migrations = MigrationConfig()
     migrations.add(model: Todo.self, database: .psql)
