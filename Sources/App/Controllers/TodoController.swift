@@ -17,7 +17,7 @@ final class TodoController: RouteCollection {
 //        todoRoutes.get(Todo.parameter, use: todoByIdPath) // 2. scheme/host/path/type_id ≈ Todo.parametes
         todoRoutes.post(Todo.self, use: create) //3. decodes the Todo object for the handler
         todoRoutes.put(Todo.parameter, use: updateTodo)
-        todoRoutes.delete(Todo.self, use: delete)
+        todoRoutes.delete(Todo.parameter, use: delete)
         // you dont need to specifiy the Parameters in the .get(path: "", Todo.parameter)
     }
     
@@ -63,7 +63,8 @@ final class TodoController: RouteCollection {
     }
 
     /// Deletes a parameterized `Todo`.
-    func delete(_ req: Request, content: Todo) throws -> Future<HTTPStatus> {
-        return todoRespositroy.delete(content)
+    func delete(_ req: Request) throws -> Future<HTTPStatus> {
+        let id = try req.parameters.next(Int.self)
+        return todoRespositroy.delete(id)
     }
 }

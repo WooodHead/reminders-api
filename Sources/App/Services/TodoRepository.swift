@@ -17,7 +17,7 @@ protocol TodoRespositroy: ServiceType {
     func findCount() -> Future<Int>
     func save(_ content: Todo) -> Future<Todo>
     func findByParams(query: QueryContainer) throws -> Future<[Todo]>
-    func delete(_ content: Todo) -> EventLoopFuture<HTTPStatus>
+    func delete(_ id: Int) -> EventLoopFuture<HTTPStatus>
 }
 
 final class PostgreSQLTodoRepository: TodoRespositroy {
@@ -72,9 +72,15 @@ final class PostgreSQLTodoRepository: TodoRespositroy {
         }
     }
     
-    func delete(_ content: Todo) -> EventLoopFuture<HTTPStatus> {
+    func delete(_ id: Int) -> EventLoopFuture<HTTPStatus> {
         return db.withConnection { (conn) in
-            return content.delete(on: conn).transform(to: .ok)
+            Todo.find(id, on: conn).flatMap { (todo) in
+                guard let todo = todo else {
+                    return conn.future(.notFound)
+                }
+                
+                return todo.delete(on: conn).transform(to: .ok)
+            }
         }
     }
     

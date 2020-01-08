@@ -13,5 +13,6 @@ import AppModels
 func configureMigrations(config: inout MigrationConfig) {
     config.add(model: Todo.self, database: .psql)
     config.add(model: User.self, database: .psql)
+    config.add(model: DeviceToken.self, database: .psql)
 }
 
