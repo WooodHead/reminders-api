@@ -24,7 +24,7 @@ public func configure(_ config: inout Config, _ env: inout Environment, _ servic
     // Register the configured psql database to the database config.
     var databasesConfig = DatabasesConfig()
     try configurePSQLDatabase(config: &databasesConfig)
-    try configureSQLiteDatabase(config: &databasesConfig)
+//    try configureSQLiteDatabase(config: &databasesConfig)
     services.register(databasesConfig)
     
     // Configure migrations

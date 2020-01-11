@@ -13,6 +13,7 @@ import AppModels
 protocol TodoRespositroy: ServiceType {
     func find(id: Int) -> Future<Todo?>
     func all() -> Future<[Todo]>
+    func user(forTodo todo: Todo) -> Future<User>
     func find(title: String) -> Future<Todo?>
     func findCount() -> Future<Int>
     func save(_ content: Todo) -> Future<Todo>
@@ -77,6 +78,12 @@ final class PostgreSQLTodoRepository: TodoRespositroy {
             todo.title = newValue.title
             todo.userID = newValue.userID
             return todo.save(on: conn)
+        }
+    }
+    
+    func user(forTodo todo: Todo) -> Future<User> {
+        return db.withConnection { (conn) in
+            return todo.user.get(on: conn)
         }
     }
     

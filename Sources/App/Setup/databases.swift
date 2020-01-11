@@ -11,12 +11,12 @@ import FluentSQLite
 
 public func configurePSQLDatabase(config: inout DatabasesConfig) throws {
 
-    guard let database = Environment.get("POSTGRES_DB"),
-        let user = Environment.get("POSTGRES_USER"),
-        let password = Environment.get("POSTGRES_PASSWORD") else {
-            throw Abort(.internalServerError)
-    }
-    
+//    guard let database = Environment.get("POSTGRES_DB"),
+//        let user = Environment.get("POSTGRES_USER"),
+//        let password = Environment.get("POSTGRES_PASSWORD") else {
+//            throw Abort(.internalServerError)
+//    }
+//    
     let psqlConfig = PostgreSQLDatabaseConfig(hostname: "localhost", username: "vapor", database: "vapor", password: "password")
     let postgreSQLDatabase = PostgreSQLDatabase(config: psqlConfig)
     config.add(database: postgreSQLDatabase, as: .psql)
