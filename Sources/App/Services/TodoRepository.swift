@@ -18,10 +18,10 @@ protocol TodoRespositroy: ServiceType {
     func save(_ content: Todo) -> Future<Todo>
     func findByParams(query: QueryContainer) throws -> Future<[Todo]>
     func delete(_ id: Int) -> EventLoopFuture<HTTPStatus>
+    func update(_ todo: Todo, withValue newValue: Todo) -> Future<Todo>
 }
 
 final class PostgreSQLTodoRepository: TodoRespositroy {
-    
     let db: PostgreSQLDatabase.ConnectionPool
     static let serviceSupports: [Any.Type] = [UserRepository.self]
      
@@ -69,6 +69,14 @@ final class PostgreSQLTodoRepository: TodoRespositroy {
     func save(_ content: Todo) -> Future<Todo> {
         return db.withConnection { (conn) in
             return content.save(on: conn)
+        }
+    }
+    
+    func update(_ todo: Todo, withValue newValue: Todo) -> EventLoopFuture<Todo> {
+        return db.withConnection { (conn) in
+            todo.title = newValue.title
+            todo.userID = newValue.userID
+            return todo.save(on: conn)
         }
     }
     

@@ -29,7 +29,6 @@ final class TodoController: RouteCollection {
         return todoRespositroy.find(id: searchById).unwrap(or: Abort(.ok))
     }
     
-    //todoRoutes.get(Todo.parameter, use: todoByIdPath)
     /// Search the database for a Todo object
     /// - Parameter id: Int pass in the path
     func todoByIdPath(_ req: Request) throws -> Future<Todo?> {
@@ -41,14 +40,12 @@ final class TodoController: RouteCollection {
         return try todoRespositroy.findByParams(query: req.query)
     }
     
+    /// Updates the decoded Todo in the database
     func updateTodo(_ req: Request) throws -> Future<Todo> {
         return try flatMap(to: Todo.self,
                            req.parameters.next(Todo.self), //find the Todo in the DB??
                            req.content.decode(Todo.self)) { (todo, updatedTodo) in // JSONDecoder
-                            
-                            todo.title = updatedTodo.title
-                            todo.userID = updatedTodo.userID
-                            return todo.save(on: req)
+                            return self.todoRespositroy.update(todo, withValue: updatedTodo)
         }
     }
     
