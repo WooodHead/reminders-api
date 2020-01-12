@@ -16,6 +16,7 @@ protocol UserRepository: ServiceType {
     func find(username: String) -> Future<User?>
     func findCount(username: String) -> Future<Int>
     func save(user: User) -> Future<User>
+    func findTodos(forUser user: User) -> Future<[Todo]>
 }
 
 final class PostgreSQLUserRepository: UserRepository {
@@ -52,6 +53,12 @@ final class PostgreSQLUserRepository: UserRepository {
     func save(user: User) -> EventLoopFuture<User> {
         return db.withConnection { conn in
             return user.save(on: conn)
+        }
+    }
+    
+    func findTodos(forUser user: User) -> Future<[Todo]> {
+        return db.withConnection { (conn) in
+            try user.todos.query(on: conn).all()
         }
     }
 }

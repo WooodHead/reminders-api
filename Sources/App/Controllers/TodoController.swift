@@ -19,7 +19,7 @@ final class TodoController: RouteCollection {
         todoRoutes.delete(Todo.parameter, use: deleteHandler)
         todoRoutes.get(Todo.parameter, "user", use: getUserHandler) // v1/api/todo/type_id/user ≈ Todo.parametes
         
-        // you dont need to specifiy the Parameters in the .get(path: "", Todo.parameter)
+        // you dont need to specifiy the parameters type in the PathComponents for the func parameter
     }
     
     func todoByIdQueryParamsHandler(_ req: Request) throws -> Future<Todo> {
