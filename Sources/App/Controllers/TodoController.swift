@@ -17,8 +17,8 @@ final class TodoController: RouteCollection {
         todoRoutes.post(Todo.self, use: createHandler) //3. decodes the Todo object for the handler
         todoRoutes.put(Todo.parameter, use: updateTodoHandler)
         todoRoutes.delete(Todo.parameter, use: deleteHandler)
-        todoRoutes.get(Todo.parameter, "user", use: getUserHandler) // v1/api/todo/type_id/user ≈ Todo.parametes
-        
+        todoRoutes.get(Todo.parameter, "user", use: getUserHandler) // v1/api/todo/type_id/user | type_id ≈ Todo.parametes
+        todoRoutes.post(Todo.parameter, "categorias", Categoria.parameter, use: addCategoriasHandler)
         // you dont need to specifiy the parameters type in the PathComponents for the func parameter
     }
     
@@ -73,11 +73,11 @@ final class TodoController: RouteCollection {
         return todoRespositroy.delete(id)
     }
     
-//    func addCategoriasHandler(_ req: Request) throws -> Future<HTTPStatus> {
-//        return try flatMap(to: HTTPStatus.self,
-//                           req.parameters.next(Todo.self),
-//                           req.parameters.next(Categoria.self), { (todo, categoria) in
-//                            
-//        })
-//    }
+    func addCategoriasHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(to: HTTPStatus.self,
+                           req.parameters.next(Todo.self),
+                           req.parameters.next(Categoria.self), { (todo, categoria) in
+                            return todo.categorias.attach(categoria, on: req).transform(to: .ok)
+        })
+    }
 }
