@@ -22,6 +22,7 @@ final class TodoController: RouteCollection {
         // you dont need to specifiy the parameters type in the PathComponents for the func parameter
     }
     
+    // MARK: -
     func todoByIdQueryParamsHandler(_ req: Request) throws -> Future<Todo> {
         guard let searchById = req.query[Int.self, at: "id"] else {
             throw Abort(.badRequest)
@@ -71,4 +72,12 @@ final class TodoController: RouteCollection {
         let id = try req.parameters.next(Int.self)
         return todoRespositroy.delete(id)
     }
+    
+//    func addCategoriasHandler(_ req: Request) throws -> Future<HTTPStatus> {
+//        return try flatMap(to: HTTPStatus.self,
+//                           req.parameters.next(Todo.self),
+//                           req.parameters.next(Categoria.self), { (todo, categoria) in
+//                            
+//        })
+//    }
 }
