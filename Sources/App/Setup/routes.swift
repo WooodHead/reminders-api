@@ -11,4 +11,7 @@ public func routes(_ router: Router, _ container: Container) throws {
     
     let userController = UserController(userRepository: userRepository)
     try router.register(collection: userController)
+    
+    let categoryController = CategoryController()
+    try router.register(collection: categoryController)
 }

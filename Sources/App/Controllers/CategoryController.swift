@@ -12,7 +12,6 @@ import Fluent
 final class CategoryController: RouteCollection {
     func boot(router: Router) throws {
         let group = router.grouped("api", "category")
-        
         group.post(Categoria.self, use: createHandler)
         group.get(use: getAllHandler)
         group.get(Categoria.parameter, use: getHandler)
