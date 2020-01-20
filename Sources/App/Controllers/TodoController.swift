@@ -28,7 +28,7 @@ final class TodoController: RouteCollection {
         // Categories association
         todoRoutes.post(Todo.parameter, CategoriasKey, Categoria.parameter, use: addCategoriasHandler)
         todoRoutes.get(Todo.parameter, CategoriasKey, use: getCategoriasHandler)
-        
+        todoRoutes.delete(Todo.parameter, CategoriasKey, Categoria.parameter, use: removeCategoriesHandler)
         // you dont need to specifiy the parameters type in the PathComponents for the func parameter
     }
     
@@ -97,5 +97,11 @@ final class TodoController: RouteCollection {
     
     func getCategoriasHandler(_ req: Request) throws -> Future<[Categoria]> {
         return try todoRespositroy.getCategorias(for: req.parameters.next(Todo.self))
+    }
+    
+    func removeCategoriesHandler(_ req: Request) throws -> Future<HTTPStatus> {
+        return try flatMap(to: HTTPStatus.self, req.parameters.next(Todo.self), req.parameters.next(Categoria.self), { (todo, categoria) in
+            return todo.categorias.detach(categoria, on: req).transform(to: .noContent)
+        })
     }
 }
