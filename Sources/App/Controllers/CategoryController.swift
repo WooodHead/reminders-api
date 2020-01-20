@@ -17,17 +17,21 @@ final class CategoryController: RouteCollection {
         group.get(Categoria.parameter, use: getHandler)
     }
     
-
-      func createHandler( _ req: Request, category: Categoria) throws -> Future<Categoria> {
+    func createHandler( _ req: Request, category: Categoria) throws -> Future<Categoria> {
         return category.save(on: req)
-      }
-
-      func getAllHandler(_ req: Request) throws -> Future<[Categoria]> {
-        return Categoria.query(on: req).all()
-      }
-
-      func getHandler(_ req: Request) throws -> Future<Categoria> {
-        return try req.parameters.next(Categoria.self)
-      }
+    }
     
+    func getAllHandler(_ req: Request) throws -> Future<[Categoria]> {
+        return Categoria.query(on: req).all()
+    }
+    
+    func getHandler(_ req: Request) throws -> Future<Categoria> {
+        return try req.parameters.next(Categoria.self)
+    }
+    
+    func getRemindersHandler(_ req: Request) throws -> Future<[Todo]> {
+        return try req.parameters.next(Categoria.self).flatMap(to: [Todo].self, { (categoria) in
+            try categoria.todos.query(on: req).all()
+        })
+    }
 }

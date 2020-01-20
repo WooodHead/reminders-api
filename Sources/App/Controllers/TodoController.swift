@@ -92,16 +92,10 @@ final class TodoController: RouteCollection {
     
     /// Set a reminder's category
     func addCategoriasHandler(_ req: Request) throws -> Future<HTTPStatus> {
-        return try flatMap(to: HTTPStatus.self,
-                           req.parameters.next(Todo.self),
-                           req.parameters.next(Categoria.self), { (todo, categoria) in
-                            return todo.categorias.attach(categoria, on: req).transform(to: .created)
-        })
+        return try todoRespositroy.setCategory(req.parameters.next(Todo.self), req.parameters.next(Categoria.self))
     }
     
     func getCategoriasHandler(_ req: Request) throws -> Future<[Categoria]> {
-        return try req.parameters.next(Todo.self).flatMap(to: [Categoria].self, { (todo) in
-            try todo.categorias.query(on: req).all()
-        })
+        return try todoRespositroy.getCategorias(for: req.parameters.next(Todo.self))
     }
 }
