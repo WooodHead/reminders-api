@@ -38,7 +38,7 @@ final class PostgreSQLAiportRepository: AiportRepository {
     
     func findUsers(forAirport airport: Airport) -> Future<[User]> {
         db.withConnection { (conn)  in
-            return airport
+            return airport.users.query(on: conn).all()
         }
     }
 
