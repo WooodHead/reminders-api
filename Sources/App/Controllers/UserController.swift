@@ -23,7 +23,6 @@ final class UserController: RouteCollection {
         userRoutes.get(use: getAllHandler)
         userRoutes.get(User.parameter, use: getAllHandler)
         userRoutes.post(User.self, use: createHandler)
-        userRoutes.get(User.parameter, "todos", use: getTodosHandler)
     }
     
     /// Saves user to the database
@@ -44,11 +43,5 @@ final class UserController: RouteCollection {
     /// - Parameter req: container
     func getHandler(_ req: Request) throws -> Future<User> {
         return try req.parameters.next(User.self)
-    }
-    
-    func getTodosHandler(_ req: Request) throws -> Future<[Todo]> {
-        return try req.parameters.next(User.self).flatMap(to: [Todo].self) { (user) in
-            self.userRepository.findTodos(forUser: user)
-        }
     }
 }

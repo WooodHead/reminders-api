@@ -6,7 +6,7 @@
         "repositoryURL": "https://github.com/idelfonsog2/app-models.git",
         "state": {
           "branch": "master",
-          "revision": "0c4e98af0ef74887d4ed6986cfdbf77437439633",
+          "revision": "1787fb72558e6e5bebf28ca3cf22793326583d71",
           "version": null
         }
       },
@@ -65,15 +65,6 @@
         }
       },
       {
-        "package": "FluentSQLite",
-        "repositoryURL": "https://github.com/vapor/fluent-sqlite.git",
-        "state": {
-          "branch": null,
-          "revision": "c32f5bda84bf4ea691d19afe183d40044f579e11",
-          "version": "3.0.0"
-        }
-      },
-      {
         "package": "HTTP",
         "repositoryURL": "https://github.com/vapor/http.git",
         "state": {
@@ -125,15 +116,6 @@
           "branch": null,
           "revision": "50eaeb8f52a1ce63f1ff3880e1114dd8757a78a6",
           "version": "2.3.2"
-        }
-      },
-      {
-        "package": "SQLite",
-        "repositoryURL": "https://github.com/vapor/sqlite.git",
-        "state": {
-          "branch": null,
-          "revision": "314d9cd21165bcf14215e336a23ff8214f40e411",
-          "version": "3.2.1"
         }
       },
       {
