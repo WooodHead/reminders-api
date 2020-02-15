@@ -11,7 +11,7 @@ import Foundation
 import AppModels
 
 protocol UserRepository: ServiceType {
-    func find(id: UUID) -> Future<User?>
+    func find(id: Int) -> Future<User?>
     func all() -> Future<[User]>
     func find(username: String) -> Future<User?>
     func findCount(username: String) -> Future<Int>
@@ -26,7 +26,7 @@ final class PostgreSQLUserRepository: UserRepository {
         self.db = db
     }
 
-    func find(id: UUID) -> EventLoopFuture<User?> {
+    func find(id: Int) -> EventLoopFuture<User?> {
         return db.withConnection { conn in
             return User.find(id, on: conn)
         }
@@ -70,8 +70,4 @@ extension PostgreSQLUserRepository {
     static func makeService(for worker: Container) throws -> Self {
         return .init(try worker.connectionPool(to: .psql))
     }
-}
-
-extension Database {
-    public typealias ConnectionPool = DatabaseConnectionPool<ConfiguredDatabase<Self>>
 }

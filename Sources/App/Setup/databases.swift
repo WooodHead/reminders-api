@@ -32,3 +32,7 @@ func configureSQLiteDatabase(config: inout DatabasesConfig) throws  {
     let sqlite = try SQLiteDatabase(storage: .file(path: path))
     config.add(database: sqlite, as: .sqlite)
 }
+
+extension Database {
+    public typealias ConnectionPool = DatabaseConnectionPool<ConfiguredDatabase<Self>>
+}
